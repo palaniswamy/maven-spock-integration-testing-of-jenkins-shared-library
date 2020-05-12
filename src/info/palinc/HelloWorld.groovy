@@ -10,5 +10,6 @@ class HelloWorld implements Serializable {
 
     def runMethod() {
         script.echo "Hello World"
+        return "success"
     }
 }
