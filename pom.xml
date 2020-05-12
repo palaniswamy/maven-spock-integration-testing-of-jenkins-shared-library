@@ -69,6 +69,27 @@
                     <includes>
                         <include>**/*Spec.java</include>
                     </includes>
+                    <excludes>
+                        <exclude>**/*ITSpec.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>**/*ITSpec.java</include>
+                    </includes>
                 </configuration>
             </plugin>
         </plugins>
