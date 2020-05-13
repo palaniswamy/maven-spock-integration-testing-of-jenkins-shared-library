@@ -92,8 +92,8 @@
                 <excludes>
                     <exclude>.github/**</exclude>
                     <exclude>.idea/**</exclude>
-                    <exclude>target</exclude>
-                    <exclude>test</exclude>
+                    <exclude>target/**</exclude>
+                    <exclude>test/**</exclude>
                     <exclude>.gitignore</exclude>
                     <exclude>pom.xml</exclude>
                     <exclude>README.md</exclude>

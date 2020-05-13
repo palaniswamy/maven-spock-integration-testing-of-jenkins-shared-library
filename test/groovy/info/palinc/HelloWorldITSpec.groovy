@@ -54,9 +54,11 @@ class HelloWorldITSpec extends Specification {
         given:
         final WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world2')
         final CpsFlowDefinition flow = new CpsFlowDefinition('''
-            import helloWorld
-
-            helloWorld
+            import helloWorld //without this line in ITSpec, thee vars/*.groovy scripts do not inherit steps from Plugins.
+             
+            node(){
+                helloWorld
+            }
         '''.stripIndent(), false)
 
         when:
