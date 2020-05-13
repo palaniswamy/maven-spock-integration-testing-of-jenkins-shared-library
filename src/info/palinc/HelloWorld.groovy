@@ -4,12 +4,12 @@ class HelloWorld implements Serializable {
 
     def script
 
-    HelloWorld(Object script) {
+    HelloWorld(def script) {
         this.script = script
     }
 
     def runMethod() {
-        script.echo "Hello World"
+        this.script.echo "Hello World!"
         return "success"
     }
 }

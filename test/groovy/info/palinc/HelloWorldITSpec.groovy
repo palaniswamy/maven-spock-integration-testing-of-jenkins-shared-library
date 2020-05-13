@@ -1,6 +1,5 @@
 package info.palinc
 
-//import com.mkobit.jenkins.pipelines.codegen.LocalLibraryRetriever
 import org.jenkinsci.plugins.workflow.libs.GlobalLibraries
 import org.jenkinsci.plugins.workflow.libs.LibraryConfiguration
 import org.jenkinsci.plugins.workflow.libs.LibraryRetriever
@@ -21,23 +20,26 @@ class HelloWorldITSpec extends Specification {
     @Rule
     public JenkinsRule rule = new JenkinsRule()
 
-    // runs once -  before each feature method
+    // runs before every feature method
     def setup() {
         rule.timeout = 30
-        //final LibraryRetriever retriever = new LocalLibraryRetriever()
-//        final LibraryConfiguration localLibrary =
-//                new LibraryConfiguration('info.palinc', retriever)
-//        localLibrary.implicit = true
-//        localLibrary.defaultVersion = 'master'
-//        localLibrary.allowVersionOverride = true
-//        GlobalLibraries.get().setLibraries(Collections.singletonList(localLibrary))
+        final LibraryRetriever retriever = new LocalLibraryRetriever()
+        //TODO: Override the methods of LibraryRetriever
+        //TODO: maven to copy the library into 'testLibrary' directory before integration testing phase
+        final LibraryConfiguration localLibrary =
+                new LibraryConfiguration('testLibrary', retriever)
+        localLibrary.implicit = true
+        localLibrary.defaultVersion = 'master'
+        localLibrary.allowVersionOverride = true
+        GlobalLibraries.get().setLibraries(Collections.singletonList(localLibrary))
     }
 
     def "runMethod() returns success"() {
         given:
         WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world')
         def script = new File('test/resources/jobs/Jenkinsfile')
-        workflowJob.definition = new CpsFlowDefinition(script.text, true)
+        // TODO: try with sandbox: true
+        workflowJob.definition = new CpsFlowDefinition(script.text, false)
 
         when:
         WorkflowRun result = rule.buildAndAssertSuccess(workflowJob)

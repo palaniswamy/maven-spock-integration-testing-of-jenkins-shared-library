@@ -15,7 +15,7 @@ class HelloWorldSpec extends Specification {
         def result = helloWorld.runMethod()
 
         then:
-        1 * script.echo.call("Hello World")
+        1 * script.echo.call("Hello World!")
         result == 'success'
     }
 
