@@ -22,8 +22,8 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Prime the environment
-      run: mvn --batch-mode validate
+    - name: Download dependencies silently
+      run: mvn dependency:resolve -Dsilent=true
 
     - name: Run the maven test
       run: mvn --batch-mode verify
