@@ -1,5 +1,6 @@
 package info.palinc
 
+import hudson.model.queue.QueueTaskFuture
 import org.jenkinsci.plugins.workflow.libs.GlobalLibraries
 import org.jenkinsci.plugins.workflow.libs.LibraryConfiguration
 import org.jenkinsci.plugins.workflow.libs.LibraryRetriever
@@ -34,19 +35,38 @@ class HelloWorldITSpec extends Specification {
         GlobalLibraries.get().setLibraries(Collections.singletonList(localLibrary))
     }
 
-    def "runMethod() returns success"() {
+    def "runMethod() prints Hello World!"() {
         given:
-        WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world')
+        final WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world')
         def script = new File('test/resources/jobs/Jenkinsfile')
         // TODO: try with sandbox: true
         workflowJob.definition = new CpsFlowDefinition(script.text, false)
 
         when:
-        WorkflowRun result = rule.buildAndAssertSuccess(workflowJob)
+        final QueueTaskFuture<WorkflowRun> futureRun = workflowJob.scheduleBuild2(0)
 
         then:
-        rule.assertLogContains('Hello World!', result)
+        final WorkflowRun run = rule.assertBuildStatusSuccess(futureRun)
+        rule.assertLogContains('Hello World!', run)
     }
 
+    def "vars/helloWord prints Hello World!"() {
+        given:
+        final WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world2')
+        final CpsFlowDefinition flow = new CpsFlowDefinition('''
+            import helloWorld
+
+            helloWorld
+        '''.stripIndent(), false)
+
+        when:
+        workflowJob.definition = flow
+
+        then:
+        final WorkflowRun run = rule.buildAndAssertSuccess(workflowJob)
+        println run.log
+        // TODO: test for console output
+        //rule.assertLogContains('Hello World!', run)
+    }
 
 }
