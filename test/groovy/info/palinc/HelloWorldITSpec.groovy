@@ -58,7 +58,7 @@ class HelloWorldITSpec extends Specification {
     def "runMethod() prints Hello World!"() {
         given:
         final WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world1')
-        workflowJob.definition = new CpsFlowDefinition('''
+        final CpsFlowDefinition flow  = new CpsFlowDefinition('''
             //@Library('testLibrary') _ //The @Library is non-functional. Without it, the 'testLibrary' is still available for testing.
 
             import info.palinc.HelloWorld
@@ -68,17 +68,17 @@ class HelloWorldITSpec extends Specification {
         '''.stripIndent(), false)
 
         when:
-        final QueueTaskFuture<WorkflowRun> futureRun = workflowJob.scheduleBuild2(0)
+        workflowJob.definition = flow
 
         then:
-        final WorkflowRun run = rule.assertBuildStatusSuccess(futureRun)
+        final WorkflowRun run = rule.buildAndAssertSuccess(workflowJob)
         rule.assertLogContains('Hello World!', run)
     }
 
     def "Importing directory, vars/helloWord prints Hello World!"() {
         given:
         final WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world2')
-        final CpsFlowDefinition flow = new CpsFlowDefinition('''
+        workflowJob.definition = new CpsFlowDefinition('''
             import helloWorld //without this line in ITSpec, thee vars/*.groovy scripts are not Serializable and errors out.
 
             node(){
@@ -87,13 +87,15 @@ class HelloWorldITSpec extends Specification {
         '''.stripIndent(), false)
 
         when:
-        workflowJob.definition = flow
+        final QueueTaskFuture<WorkflowRun> futureRun = workflowJob.scheduleBuild2(0)
 
         then:
-        final WorkflowRun run = rule.buildAndAssertSuccess(workflowJob)
+        final WorkflowRun run = rule.assertBuildStatusSuccess(futureRun)
         println run.log
         // TODO: test for console output
         //rule.assertLogContains('Hello World!', run)
+
+        // getting log thru logAction
         List<LogAction> logActions = new ArrayList<LogAction>();
         for (FlowNode n : new FlowGraphWalker(run.getExecution())) {
             LogAction la = n.getAction(LogAction.class);
@@ -105,6 +107,8 @@ class HelloWorldITSpec extends Specification {
         StringWriter w = new StringWriter();
         logActions.get(0).getLogText().writeLogTo(0, w);
         println(w.toString())
+
+
     }
 
     def "example from echosteptest"() {
