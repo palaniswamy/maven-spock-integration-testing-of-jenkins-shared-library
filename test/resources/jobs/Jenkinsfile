@@ -1,13 +1,4 @@
-// def greet = "Hello World!"
-// node() {
-//   echo greet
-// }
-
-@Library('testLibrary') _
-
-import info.palinc.HelloWorld
-
-//helloWorld
-
-def hW = new HelloWorld(this)
-hW.runMethod()
+def greet = "Hello World!"
+node() {
+  echo greet
+}
