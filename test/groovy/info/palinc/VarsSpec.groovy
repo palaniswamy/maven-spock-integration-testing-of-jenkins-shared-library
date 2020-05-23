@@ -22,10 +22,7 @@ class VarsSpec extends Specification {
     // runs before every feature method
     def setup() {
         rule.timeout = 30
-        // l.capture(3).record("my.logger.name", Level.ALL);
         final LibraryRetriever retriever = new LocalLibraryRetriever()
-        //TODO: Override the methods of LibraryRetriever
-        //TODO: maven to copy the library into 'testLibrary' directory before integration testing phase
         final LibraryConfiguration localLibrary =
                 new LibraryConfiguration('testLibrary', retriever)
         localLibrary.implicit = true
@@ -39,7 +36,7 @@ class VarsSpec extends Specification {
         given:
         final WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world1')
         workflowJob.definition = new CpsFlowDefinition('''
-            helloWorld() //Fails currently
+            echo "Hello World!" //Fails currently
         '''.stripIndent(), false)
 
         expect:
