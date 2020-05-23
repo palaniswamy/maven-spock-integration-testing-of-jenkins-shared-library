@@ -1,24 +1,28 @@
 package info.palinc
 
+import hudson.model.queue.QueueTaskFuture
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.libs.GlobalLibraries
 import org.jenkinsci.plugins.workflow.libs.LibraryConfiguration
 import org.jenkinsci.plugins.workflow.libs.LibraryRetriever
-import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Specification
 
-class VarsJunitTest {
-
+class VarsSpec extends Specification {
+    // A rule implementation can intercept test method execution and
+    // alter the behaviour of these tests, or add cleanup work as it was done in
+    // JUnit's @Before, @After, @BeforeClass and @AfterClass or
+    // Spock’s setup, cleanup, setupSpec and cleanupSpec methods
     @Rule
     public JenkinsRule rule = new JenkinsRule()
 
-    @Before
-    void configureGlobalGitLibraries() {
+    // runs before every feature method
+    def setup() {
         rule.timeout = 30
+        // l.capture(3).record("my.logger.name", Level.ALL);
         final LibraryRetriever retriever = new LocalLibraryRetriever()
         //TODO: Override the methods of LibraryRetriever
         //TODO: maven to copy the library into 'testLibrary' directory before integration testing phase
@@ -31,19 +35,14 @@ class VarsJunitTest {
         GlobalLibraries.get().libraries = [localLibrary]
     }
 
-//    @Test
-//    void "testing /vars scripts"() {
-//        final CpsFlowDefinition flow = new CpsFlowDefinition('''
-//        import helloWorld
-//
-//        node {
-//          helloWorld()
-//        }
-//    '''.stripIndent(), false)
-//        final WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'project')
-//        workflowJob.definition = flow
-//
-//        final WorkflowRun run = rule.buildAndAssertSuccess(workflowJob)
-//        //rule.assertLogContains('Hello World!', run)
-//    }
+    def "the test for a simple vars groovy script which should print Hello World!"() {
+        given:
+        final WorkflowJob workflowJob = rule.createProject(WorkflowJob, 'test-hello-world1')
+        workflowJob.definition = new CpsFlowDefinition('''
+            helloWorld() //Fails currently
+        '''.stripIndent(), false)
+
+        expect:
+        final WorkflowRun run = rule.buildAndAssertSuccess(workflowJob)
+    }
 }
